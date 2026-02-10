@@ -3,7 +3,7 @@ name: eShopOnWeb Build and Test
 on: [push, workflow_dispatch]
 
 env:
-  RESOURCE_GROUP: rg-eshoponweb-Hackathon
+  RESOURCE_GROUP: Hackathon
   LOCATION: uksouth
   TEMPLATE_FILE: infra/webapp.bicep
   SUBSCRIPTION_ID: 539fbb79-2988-4831-927f-e46e465c06b1
