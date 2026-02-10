@@ -90,7 +90,7 @@ jobs:
               
   deploy_stag:
     runs-on: ubuntu-latest
-    needs: buildandtest
+    needs: deploy_dev
     environment:
       name: Staging
     steps:
