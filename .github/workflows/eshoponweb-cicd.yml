@@ -44,6 +44,7 @@ jobs:
           name: bicep-template
           path: ${{ env.TEMPLATE_FILE }}
 
+#DEVELOPMENT 
   deploy:
     runs-on: ubuntu-latest
     needs: buildandtest
@@ -72,9 +73,9 @@ jobs:
         uses: azure/arm-deploy@v2
         with:
           subscriptionId: ${{ env.SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}-dev
           template: bicep-template/webapp.bicep
-          parameters: "webAppName=${{ env.WEBAPP_NAME }} location=${{ env.LOCATION }}"
+          parameters: "webAppName=${{ env.WEBAPP_NAME }}-dev location=${{ env.LOCATION }}"
           failOnStdErr: false
 
       - name: Publish Website to WebApp (CLI)
@@ -82,7 +83,51 @@ jobs:
         with:
           inlineScript: |
             az webapp deploy \
-              --name ${{ env.WEBAPP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --name ${{ env.WEBAPP_NAME }}-dev \
+              --resource-group ${{ env.RESOURCE_GROUP }}-dev \
+              --src-path .net-app/app.zip \
+              --type zip
+              
+
+deploy:
+    runs-on: ubuntu-latest
+    needs: buildandtest
+    environment:
+      name: Staging
+    steps:
+      - name: Download artifact (webapp)
+        uses: actions/download-artifact@v6
+        with:
+          name: .net-app
+          path: .net-app
+
+      - name: Download artifact (bicep)
+        uses: actions/download-artifact@v6
+        with:
+          name: bicep-template
+          path: bicep-template
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          auth-type: SERVICE_PRINCIPAL
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy infra (Bicep)
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ env.SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}-staging
+          template: bicep-template/webapp.bicep
+          parameters: "webAppName=${{ env.WEBAPP_NAME }}-staging location=${{ env.LOCATION }}"
+          failOnStdErr: false
+
+      - name: Publish Website to WebApp (CLI)
+        uses: Azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp deploy \
+              --name ${{ env.WEBAPP_NAME }}-staging \
+              --resource-group ${{ env.RESOURCE_GROUP }}-staging \
               --src-path .net-app/app.zip \
               --type zip
