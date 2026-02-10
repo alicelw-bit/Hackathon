@@ -4,7 +4,7 @@ on: [push, workflow_dispatch]
 
 env:
   RESOURCE_GROUP: Hackathon
-  LOCATION: uksouth
+  LOCATION: westeurope
   TEMPLATE_FILE: infra/webapp.bicep
   SUBSCRIPTION_ID: 539fbb79-2988-4831-927f-e46e465c06b1
   WEBAPP_NAME: eshoponweb-webapp-Hackathon
