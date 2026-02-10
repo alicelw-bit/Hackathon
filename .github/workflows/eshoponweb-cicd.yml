@@ -45,7 +45,7 @@ jobs:
           path: ${{ env.TEMPLATE_FILE }}
 
 #DEVELOPMENT 
-  deploy:
+  deploy_dev:
     runs-on: ubuntu-latest
     needs: buildandtest
     environment:
@@ -73,7 +73,7 @@ jobs:
         uses: azure/arm-deploy@v2
         with:
           subscriptionId: ${{ env.SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}-dev
+          resourceGroupName: "${{ env.RESOURCE_GROUP }}-dev"
           template: bicep-template/webapp.bicep
           parameters: "webAppName=${{ env.WEBAPP_NAME }}-dev location=${{ env.LOCATION }}"
           failOnStdErr: false
@@ -84,12 +84,11 @@ jobs:
           inlineScript: |
             az webapp deploy \
               --name ${{ env.WEBAPP_NAME }}-dev \
-              --resource-group ${{ env.RESOURCE_GROUP }}-dev \
+              --resource-group "${{ env.RESOURCE_GROUP }}-dev" \
               --src-path .net-app/app.zip \
               --type zip
               
-
-deploy:
+  deploy_stag:
     runs-on: ubuntu-latest
     needs: buildandtest
     environment:
@@ -117,7 +116,7 @@ deploy:
         uses: azure/arm-deploy@v2
         with:
           subscriptionId: ${{ env.SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}-staging
+          resourceGroupName: "${{ env.RESOURCE_GROUP }}-staging"
           template: bicep-template/webapp.bicep
           parameters: "webAppName=${{ env.WEBAPP_NAME }}-staging location=${{ env.LOCATION }}"
           failOnStdErr: false
