@@ -130,6 +130,12 @@ jobs:
               --resource-group ${{ env.RESOURCE_GROUP }}-staging \
               --src-path .net-app/app.zip \
               --type zip
+              
+      - name: Test with the dotnet CLI
+        run: dotnet test 'tests/IntegrationTests/*.csproj' --no-build
+
+      - name: Test with the dotnet CLI
+        run: dotnet test 'tests/FunctionalTests/*.csproj' --no-build
 
 
  
