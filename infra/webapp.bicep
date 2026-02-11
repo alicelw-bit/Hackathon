@@ -8,7 +8,7 @@ param location string = resourceGroup().location
 
 var appServicePlanName = toLower('AppServicePlan-${webAppName}')
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = { name: WebAppLog }
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = { name: 'WebAppLog' }
 
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
