@@ -149,7 +149,7 @@ jobs:
           fi
           for proj in "${projs[@]}"; do
             echo "Testing $proj"
-            dotnet test "$proj" --no-build
+            dotnet test "$proj" --logger trx;LogFileName=.\results --no-build
           done
   
       - name: Run Functional Tests
@@ -163,7 +163,7 @@ jobs:
           fi
           for proj in "${projs[@]}"; do
             echo "Testing $proj"
-            dotnet test "$proj" --no-build
+            dotnet test "$proj" --logger trx;LogFileName=.\results --no-build
           done
           
       - name: Upload test results
