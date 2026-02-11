@@ -94,24 +94,31 @@ jobs:
     environment:
       name: Staging
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
       - name: Download artifact (webapp)
         uses: actions/download-artifact@v6
         with:
           name: .net-app
           path: .net-app
-
+  
       - name: Download artifact (bicep)
         uses: actions/download-artifact@v6
         with:
           name: bicep-template
           path: bicep-template
-
+  
       - name: Azure Login
         uses: azure/login@v2
         with:
           auth-type: SERVICE_PRINCIPAL
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+  
       - name: Deploy infra (Bicep)
         uses: azure/arm-deploy@v2
         with:
@@ -120,7 +127,7 @@ jobs:
           template: bicep-template/webapp.bicep
           parameters: "webAppName=${{ env.WEBAPP_NAME }}-staging location=${{ env.LOCATION }}"
           failOnStdErr: false
-
+  
       - name: Publish Website to WebApp (CLI)
         uses: Azure/cli@v2
         with:
@@ -130,12 +137,35 @@ jobs:
               --resource-group ${{ env.RESOURCE_GROUP }}-staging \
               --src-path .net-app/app.zip \
               --type zip
-              
-      - name: Test with the dotnet CLI
-        run: dotnet test 'tests/IntegrationTests/*.csproj' --no-build
+  
+      - name: Run Integration Tests
+        shell: bash
+        run: |
+          shopt -s nullglob
+          projs=(tests/IntegrationTests/*.csproj)
+          if [ ${#projs[@]} -eq 0 ]; then
+            echo "No .csproj found under tests/IntegrationTests"
+            exit 1
+          fi
+          for proj in "${projs[@]}"; do
+            echo "Testing $proj"
+            dotnet test "$proj" --no-build
+          done
+  
+      - name: Run Functional Tests
+        shell: bash
+        run: |
+          shopt -s nullglob
+          projs=(tests/FunctionalTests/*.csproj)
+          if [ ${#projs[@]} -eq 0 ]; then
+            echo "No .csproj found under tests/FunctionalTests"
+            exit 1
+          fi
+          for proj in "${projs[@]}"; do
+            echo "Testing $proj"
+            dotnet test "$proj" --no-build
+          done
 
-      - name: Test with the dotnet CLI
-        run: dotnet test 'tests/FunctionalTests/*.csproj' --no-build
 
 
  
