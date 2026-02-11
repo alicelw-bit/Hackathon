@@ -1,9 +1,16 @@
 param webAppName string // = uniqueString(resourceGroup().id) // unique String gets created from az cli instructions
+param logAnalyticsWorkspace string = '${uniqueString(resourceGroup().id)}la'
+
+
 param sku string = 'S1' // The SKU of App Service Plan
 param location string = resourceGroup().location
 
+
 var appServicePlanName = toLower('AppServicePlan-${webAppName}')
 
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: logAnalyticsWorkspace
+}
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
