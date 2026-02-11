@@ -8,6 +8,9 @@ param location string = resourceGroup().location
 
 var appServicePlanName = toLower('AppServicePlan-${webAppName}')
 
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = { name: WebAppLog }
+
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
@@ -39,20 +42,41 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
 }
-resource diagnosticLogs 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: appServicePlanName
-  scope: appServicePlan
-  properties: {
-    workspaceId: logAnalytics.id
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          days: 30
-          enabled: true 
-        }
-      }
-    ]
+
+resource webAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+name: '${webAppName}-diagnostics'
+scope: webApp
+properties: {
+workspaceId: logAnalytics.id
+
+logs: [
+  {
+    category: 'AppServiceHTTPLogs'
+    enabled: true
   }
+  {
+    category: 'AppServiceConsoleLogs'
+    enabled: true
+  }
+  {
+    category: 'AppServiceAppLogs'
+    enabled: true
+  }
+  {
+    category: 'AppServiceAuditLogs'
+    enabled: true
+  }
+  {
+    category: 'AppServicePlatformLogs'
+    enabled: true
+  }
+]
+
+metrics: [
+  {
+    category: 'AllMetrics'
+    enabled: true
+  }
+]
+}
 }
