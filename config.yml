@@ -1,13 +1,16 @@
-displayName: URLTest
-testPlan: url_test.jmx
+displayName: eShopOnWebLoadTeting
+testPlan: url-test.json
 description: ''
-engineInstances: 2
+engineInstances: 1
 testId: b9e1b5bf-3a8e-4528-a5bb-49541bb6600c
-testType: JMX
+testType: URL
 splitAllCSVs: False
-failureCriteria:
-- p90(response_time_ms) > 4000
-- percentage(error) > 10
+referenceIdentities:
+- kind: KeyVault
+  type: SystemAssigned
+- kind: Metrics
+  type: SystemAssigned
 autoStop:
-  errorPercentage: 80
-  timeWindow: 120
+  errorPercentage: 90
+  timeWindow: 60
+  maximumVirtualUsersPerEngine: 5000
