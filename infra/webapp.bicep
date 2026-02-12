@@ -49,7 +49,7 @@ scope: appService
 properties: {
 workspaceId: logAnalytics.id */
 
-logs: [
+/* logs: [
   {
     category: 'AppServiceHTTPLogs'
     enabled: true
@@ -80,3 +80,4 @@ metrics: [
 ]
 }
 }
+*/
