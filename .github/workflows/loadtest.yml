@@ -30,7 +30,7 @@ jobs:
         testId: "run-${{ github.run_id }}"
         displayName: "URL Load Test"
         engineInstances: 1
-        httpsRequest:
+        requests:
           endpoint: "${{ env.TARGET_URL }}"
           requestsPerSecond: ${{ env.RPS }}
           duration: "${{ env.DURATION }}"
