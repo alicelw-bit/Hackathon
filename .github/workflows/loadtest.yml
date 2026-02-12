@@ -27,7 +27,7 @@ jobs:
     - name: Azure Load Testing
       uses: azure/load-testing@v1.1.27
       with:
-        loadTestConfigFile: 'config.yaml'
+        loadTestConfigFile: 'config.yml'
         loadTestResource: ${{ env.LOADTEST_RESOURCE_NAME }}
         resourceGroup: ${{ env.LOADTEST_RESOURCE_GROUP }}
         env: |
