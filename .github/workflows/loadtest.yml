@@ -1,1 +1,54 @@
+name: Load Test
 
+on:
+  workflow_dispatch:   
+
+env:
+  LOADTEST_RESOURCE_GROUP: hackathon-staging
+  LOADTEST_RESOURCE_NAME: LoadTestProd24
+  TARGET_URL: "https://eshoponweb-webapp-Hackathon.azurewebsites.net/" 
+  RPS: 20
+  DURATION: "2m"
+
+jobs:
+  run-loadtest:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Generate URL load test config
+      run: |
+        mkdir -p loadtests
+        cat > loadtests/test-config.yaml <<EOF
+        testId: "run-${{ github.run_id }}"
+        displayName: "URL Load Test"
+        engineInstances: 1
+        httpsRequest:
+          endpoint: "${{ env.TARGET_URL }}"
+          requestsPerSecond: ${{ env.RPS }}
+          duration: "${{ env.DURATION }}"
+        EOF
+        echo "Generated test-config.yaml:"
+        cat loadtests/test-config.yaml
+
+    - name: Run Azure Load Test (URL-based)
+      uses: azure/load-testing@v1
+      with:
+        loadtestConfigFile: loadtests/test-config.yaml
+        loadtestResource: ${{ env.LOADTEST_RESOURCE_NAME }}
+        resourceGroup: ${{ env.LOADTEST_RESOURCE_GROUP }}
+
+    - name: Upload Load Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: loadtest-results
+        path: |
+          **/azureloadtesting*.json
+          **/results/**
