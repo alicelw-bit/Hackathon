@@ -43,7 +43,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-/ * resource webAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+/* resource webAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
 name: '${webAppName}-diagnostics'
 scope: appService
 properties: {
