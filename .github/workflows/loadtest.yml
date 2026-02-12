@@ -22,8 +22,8 @@ jobs:
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Generate URL load test config
+/*
+   - name: Generate URL load test config
       run: |
         mkdir -p loadtests
         cat > loadtests/test-config.yaml <<EOF
@@ -37,7 +37,7 @@ jobs:
         EOF
         echo "Generated test-config.yaml:"
         cat loadtests/test-config.yaml
-
+*/
     - name: Run Azure Load Test (URL-based)
       uses: azure/load-testing@v1
       with:
